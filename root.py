@@ -2,15 +2,19 @@
 
 import tkinter as tk
 
+# Creates main window
 root = tk.Tk()
+root.title('Hello World')
 
-ButtonFrame = tk.Frame(root).grid(column=0, row=0)
-tk.Button(ButtonFrame, text='Here1').grid(column=0, row=0)
+# Create button panel at the left of the window
+ButtonFrame = tk.Frame(root)
+tk.Button(ButtonFrame, text='Spreadsheet', width=10).pack()
+tk.Button(ButtonFrame, text='Time Plot', width=10).pack()
+ButtonFrame.grid(column=0, row=0)
 
-
-
-ContentFrame = tk.Frame(root).grid(column=1, row=0)
-
-tk.Label(root, text='here is some text you can see').grid(column=0, row=1, columnspan=2)
+# Creates content at the right
+ContentFrame = tk.Frame(root)
+tk.Label(ContentFrame, text='here is some text you can see').pack()
+ContentFrame.grid(column=1, row=0)
 
 root.mainloop()
