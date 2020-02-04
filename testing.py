@@ -2,6 +2,7 @@
 
 
 from tkinter import *
+from toolbox import *
 
 
 # Creates main window
@@ -42,6 +43,8 @@ add.grid(row=2, column=0)
 remove = Button(root, text='remove', width=15, border=0.7, command=counterSub)
 remove.grid(row=2, column=1)
 
+# Toolbox test
+ConditionSelect(root).grid(row=3, column=0)
 
 # Runs window
 root.mainloop()
