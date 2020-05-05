@@ -7,6 +7,12 @@ Dependencies list:
  * matplotlib
 
 Planned Features List:
- * create window class
+ * proper loading of grouped data types
+ * dedicated data loading system
+ * simple total number of cases tool
  * implement spreadsheet creator
  * implement graphing utility
+ * implement pie chart creator
+ * add features to toolbox.py
+    - filter frame
+    - complete variable selector class
