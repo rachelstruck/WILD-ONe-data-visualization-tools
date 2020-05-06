@@ -15,8 +15,16 @@ class Condition:
     def __init__(self, name, isgrouped=False):
         self.name = name
         self.isgrouped = isgrouped
-        self.series = cases[self.name].drop_duplicates()
-        self.array = self.series.dropna().array
+        self.series = cases[self.name]
+        self.array = self.series.drop_duplicates().dropna().array
+
+        if isgrouped:
+            items = []
+            for I in self.array:
+                for i in I.split(" / "):
+                    if i not in items:
+                        items.append(i)
+            self.array = items
 
         ConditionDict[self.name] = self
 
@@ -40,6 +48,9 @@ class TkWidget:
     def pack(self, **kwargs):
         self.object.pack(**kwargs)
         return self
+
+    def bind(self, *args):
+        self.object.bind(*args)
 
 class ConditionSelect(TkWidget):
 
@@ -72,88 +83,115 @@ class ConditionSelect(TkWidget):
             self.menu.add_command(label=name,
                 command=self.UpdateDisplayCommand(name))
 
-class VarWindow(TkWidget):
+class Window(TkWidget):
+
+    def getSelected(self):
+        index = self.listbox.curselection()
+        selected = []
+        for i in index:
+            selected.append(self.listbox.get(i))
+        return selected
+
+class VarWindow(Window):
 
     def buildBox(self, condition):
         self.condition = condition
         varlist = self.condition.array
-        self.object.delete(0, 'end')
+        self.listbox.delete(0, 'end')
         for i in range(len(varlist)):
-            self.object.insert(i, varlist[i])
+            self.listbox.insert(i, varlist[i])
 
     def filter(self, string):
         varlist = self.condition.array
-        self.object.delete(0, 'end')
+        self.listbox.delete(0, 'end')
         for var in varlist:
-            if string in var:
-                self.object.insert(self.object.size(), var)
-
-    def getSelected(self):
-        index = self.object.curselection()
-        selected = []
-        for i in index:
-            selected.append(self.object.get(i))
-        return selected
+            if string.lower() in var.lower():
+                self.listbox.insert(self.listbox.size(), var)
 
     def __init__(self, frame):
-        self.sbar = Scrollbar(frame)
-        self.sbar.pack(side='right', fill='y')
-        self.object = Listbox(frame, yscrollcommand=self.sbar.set,
+        self.object = Frame(frame)
+        self.sbar = Scrollbar(self.object)
+        self.listbox = Listbox(self.object, yscrollcommand=self.sbar.set,
             width=50, height=19, selectmode='extended')
-        self.sbar.config(command=self.object.yview)
+        self.listbox.pack(side='left')
+        self.sbar.pack(side='right', fill='y')
+        self.sbar.config(command=self.listbox.yview)
 
         self.buildBox( ConditionDict[defaultCondition] )
 
-class SelectedWindow(TkWidget):
+class SelectedWindow(Window):
 
     def add(self, varlist):
+        allvars = self.listbox.get(0, last='end')
         for var in varlist:
-            self.object.insert(self.object.size(), var)
+            if var not in allvars:
+                self.listbox.insert(self.listbox.size(), var)
 
-    def remove(self):
-        index = list( self.object.curselection() )
+    def remove(self, *args):
+        index = list( self.listbox.curselection() )
         index.sort(reverse=True)
         for i in index:
-            self.object.delete(i)
+            self.listbox.delete(i)
 
     def __init__(self, frame):
-        self.object = Listbox(frame, width=50, height=19,
+        self.object = Frame(frame)
+        self.listbox = Listbox(self.object, width=50, height=19,
             selectmode='extended')
+        self.listbox.pack()
+
+class Filter(TkWidget):
+
+    def getFilter(self):
+        return self.filter.get()
+
+    def addTrace(self, tracefunc):
+        self.filter.trace_add("write", tracefunc)
+
+    def __init__(self, frame):
+        self.object = Frame(frame)
+        self.label = Label(self.object, text='Filter: ').pack(side='left')
+        self.filter = StringVar()
+        self.entry = Entry(self.object,
+            textvariable=self.filter).pack(side='right')
 
 class VarSelector(TkWidget):
 
+    def add(self, *args):
+        selected = self.VarWindow.getSelected()
+        self.SelectedWindow.add(selected)
+
+    def filterTrace(self, *args):
+        string = self.filter.getFilter()
+        self.VarWindow.filter(string)
+
+    def conditionTrace(self):
+        condition = self.ConditionSelector.getCondition()
+        self.VarWindow.buildBox(condition)
+
     def __init__(self, frame):
-        self.frame = Frame(frame)
-        self.ConditionSelector = ConditionSelect().grid(row=0, column=0)
-        self.VarWindow = VarWindow().grid(row=1, column=0)
-        self.SelectedWindow = SelectedWindow().grid(row=1, column=1)
+        self.object = Frame(frame)
+        self.ConditionSelector = ConditionSelect(self.object).grid(row=0, column=0)
+        self.ConditionSelector.setTracefunc(self.conditionTrace)
+        self.VarWindow = VarWindow(self.object).grid(row=1, column=0)
+        self.SelectedWindow = SelectedWindow(self.object).grid(row=1, column=1)
+        self.addButton = Button(self.object, text="Add Variable",
+            command=self.add).grid(row=2, column=0)
+        self.removeButton = Button(self.object, text="Remove Variable",
+            command=self.SelectedWindow.remove).grid(row=2, column=1)
+        self.filter = Filter(self.object).grid(row=3, column=0)
+        self.filter.addTrace(self.filterTrace)
+
+        self.VarWindow.listbox.bind("<Return>", self.add)
+        self.SelectedWindow.listbox.bind("<BackSpace>",
+            self.SelectedWindow.remove)
 
 if __name__ == '__main__':
 
     import tkinter as tk
 
     root = Tk()
+    root.title("toolbox")
 
-    box = VarWindow(root)
-
-
-    b = ConditionSelect(root)
-    def f():
-        box.buildBox(b.getCondition())
-    b.setTracefunc(lambda: box.buildBox(b.getCondition()))
-    b.pack()
-
-    p = Button(
-        root, text="print selection",
-        command=lambda: selected.add( box.getSelected() )
-        )
-    p.pack()
-
-    box.pack()
-
-    selected = SelectedWindow(root).pack()
-    delButton = Button(
-        root, text="delete", command=lambda: selected.remove()
-        ).pack()
+    VS = VarSelector(root).pack()
 
     root.mainloop()
