@@ -2,6 +2,7 @@
 
 from tkinter import *
 import pandas as pd
+import numpy as np
 
 print("loading case data...")
 datapath = r"C:\Users\buffs\Documents\cases.xls"
@@ -15,8 +16,8 @@ class Condition:
     def __init__(self, name, isgrouped=False):
         self.name = name
         self.isgrouped = isgrouped
-        self.series = cases[self.name]
-        self.array = self.series.drop_duplicates().dropna().array
+        self.series = cases[self.name].dropna()
+        self.array = self.series.drop_duplicates().array
 
         if isgrouped:
             items = []
@@ -24,7 +25,15 @@ class Condition:
                 for i in I.split(" / "):
                     if i not in items:
                         items.append(i)
-            self.array = items
+            self.array = np.array(items)
+
+            falsearray = np.zeros((cases.index.size, self.array.size), dtype=bool)
+            self.df = pd.DataFrame(falsearray, index=cases.index, columns=self.array)
+
+            for case in self.series.index:
+                I = self.series[case].split(" / ")
+                for i in I:
+                    self.df.at[case, i] = True
 
         ConditionDict[self.name] = self
 
