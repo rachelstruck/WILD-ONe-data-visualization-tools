@@ -7,7 +7,6 @@ import numpy as np
 print("loading case data...")
 datapath = r"C:\Users\buffs\Documents\cases.xls"
 cases = pd.read_html(datapath)[0]
-print("done\n")
 
 ConditionDict = {}
 
@@ -37,6 +36,7 @@ class Condition:
 
         ConditionDict[self.name] = self
 
+print("processing case data...")
 Species = Condition('Species')
 Admit_Life_Stage = Condition('Admit. Life Stage')
 Rescue_Jurisdiction = Condition('Rescue Jurisdiction')
@@ -49,6 +49,8 @@ To_Whom = Condition('To Whom')
 
 defaultCondition = list( ConditionDict.keys() )[0]
 
+print("done\n")
+
 class TkWidget:
     def grid(self, **kwargs):
         self.object.grid(**kwargs)
@@ -57,6 +59,9 @@ class TkWidget:
     def pack(self, **kwargs):
         self.object.pack(**kwargs)
         return self
+
+    def pack_forget(self):
+        self.object.pack_forget()
 
     def bind(self, *args):
         self.object.bind(*args)
@@ -195,8 +200,6 @@ class VarSelector(TkWidget):
             self.SelectedWindow.remove)
 
 if __name__ == '__main__':
-
-    import tkinter as tk
 
     root = Tk()
     root.title("toolbox")
