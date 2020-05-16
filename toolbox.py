@@ -164,7 +164,7 @@ class Window(TkWidget):
 
 
 class VarWindow(Window):
-    """Display and select the items of an array of a condition.
+    """Create window to select the items of a condition.
 
     Public Methods: build_box, filter
 
@@ -273,6 +273,8 @@ class VarSelector(TkWidget):
 
     Public Attributes:
     object -- the frame everything is attatched to
+
+    *Notes: Enter and BackSpace are keyboard shortcuts for add and remove
     """
 
     def add(self, *args):
