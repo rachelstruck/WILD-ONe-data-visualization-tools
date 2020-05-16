@@ -16,9 +16,22 @@ from tkinter import *
 import pandas as pd
 import numpy as np
 
+condition_tup = (
+"Species", "Admit. Life Stage", "Rescue Jurisdiction",
+"Circumstances of Rescue", "Injury", "Disposition", "Disposition Addit.",
+"Disposition Jurisdiction", "To Whom"
+)
+toy_data = np.repeat("None", len(condition_tup)).reshape(1, 9)
+# Toy data to make the program run when real data is not loaded
+
 print("loading case data...")
-datapath = r"C:\Users\buffs\Documents\cases.xls"
-cases = pd.read_html(datapath)[0]
+datapath = r"not a valid path"
+try:
+    cases = pd.read_html(datapath)[0]
+except ValueError:
+    print("data not found, loading toy data...")
+    cases = pd.DataFrame(toy_data, columns=condition_tup)
+
 
 ConditionDict = {}
 # Retrieve a condition object from its string name
