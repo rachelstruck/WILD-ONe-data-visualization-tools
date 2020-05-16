@@ -10,5 +10,5 @@ class PieChart(TkWidget):
 if __name__ == "__main__":
 
     root = Tk()
-    PieChart = PieChart(root).pack()
+    pie_chart = PieChart(root).pack()
     root.mainloop()

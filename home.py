@@ -10,5 +10,5 @@ class Home(TkWidget):
 if __name__ == "__main__":
 
     root = Tk()
-    Home = Home(root).pack()
+    home = Home(root).pack()
     root.mainloop()

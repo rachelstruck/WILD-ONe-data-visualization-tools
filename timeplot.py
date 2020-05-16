@@ -10,5 +10,5 @@ class TimePlot(TkWidget):
 if __name__ == "__main__":
 
     root = Tk()
-    TimePlot = TimePlot(root).pack()
+    time_plot = TimePlot(root).pack()
     root.mainloop()

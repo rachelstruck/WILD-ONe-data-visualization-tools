@@ -5,6 +5,7 @@ Dependencies list:
  * tkinter
  * pandas
  * matplotlib
+ * numpy
 
 Planned Features List:
  * dedicated data loading system
@@ -13,3 +14,9 @@ Planned Features List:
  * implement spreadsheet creator
  * implement graphing utility
  * implement pie chart creator
+ * backend function for data filtering
+
+Todo:
+ * Add docstrings to high level functions and classes in toolbox.py
+ * Restructure supporting files into a module
+ * add toy data to run program without data loaded

@@ -10,56 +10,54 @@ from timeplot import TimePlot
 from piechart import PieChart
 
 
-def SwitchWindow(win):
-    global CurrentWindow
-    CurrentWindow.pack_forget()
-    CurrentWindow = win
-    CurrentWindow.pack()
+def switch_window(win):
+    global current_window
+    current_window.pack_forget()
+    current_window = win
+    current_window.pack()
 
 
 # Creates main window
 root = Tk()
-root.title('WILD-ONe Data Visualization Tools')
-
+root.title("WILD-ONe Data Visualization Tools")
 
 # Create button panel at the left of the window
 button_width = 13
-ButtonFrame = Frame(root)
-Button(ButtonFrame, text='Home', width=button_width,
-    command=lambda: SwitchWindow(Home)).pack()
-Button(ButtonFrame, text='Number of Cases', width=button_width,
-    command=lambda: SwitchWindow(NumOfCases)).pack()
-Button(ButtonFrame, text='Spreadsheet', width=button_width,
-    command=lambda: SwitchWindow(Spreadsheet)).pack()
-Button(ButtonFrame, text='Time Plot', width=button_width,
-    command=lambda: SwitchWindow(TimePlot)).pack()
-Button(ButtonFrame, text='Pie Chart', width=button_width,
-    command=lambda: SwitchWindow(PieChart)).pack()
-ButtonFrame.grid(column=0, row=0)
-
+button_frame = Frame(root)
+Button(button_frame, text="Home", width=button_width,
+    command=lambda: switch_window(home)).pack()
+Button(button_frame, text="Number of Cases", width=button_width,
+    command=lambda: switch_window(num_of_cases)).pack()
+Button(button_frame, text="Spreadsheet", width=button_width,
+    command=lambda: switch_window(spreadsheet)).pack()
+Button(button_frame, text="Time Plot", width=button_width,
+    command=lambda: switch_window(time_plot)).pack()
+Button(button_frame, text="Pie Chart", width=button_width,
+    command=lambda: switch_window(pie_chart)).pack()
+button_frame.grid(column=0, row=0)
 
 # Creates content at the right
-ContentFrame = Frame(root)
-ContentFrame.grid(column=1, row=0)
+content_frame = Frame(root)
+content_frame.grid(column=1, row=0)
 
-MainWindowList = []
+main_window_list = []
 
-Home = Home(ContentFrame)
-MainWindowList.append(Home)
+home = Home(content_frame)
+main_window_list.append(home)
 
-NumOfCases = NumOfCases(ContentFrame)
-MainWindowList.append(NumOfCases)
+num_of_cases = NumOfCases(content_frame)
+main_window_list.append(num_of_cases)
 
-Spreadsheet = Spreadsheet(ContentFrame)
-MainWindowList.append(Spreadsheet)
+spreadsheet = Spreadsheet(content_frame)
+main_window_list.append(spreadsheet)
 
-TimePlot = TimePlot(ContentFrame)
-MainWindowList.append(TimePlot)
+time_plot = TimePlot(content_frame)
+main_window_list.append(time_plot)
 
-PieChart = PieChart(ContentFrame)
-MainWindowList.append(PieChart)
+pie_chart = PieChart(content_frame)
+main_window_list.append(pie_chart)
 
-CurrentWindow = Home
-CurrentWindow.pack()
+current_window = home
+current_window.pack()
 
 root.mainloop()

@@ -10,5 +10,5 @@ class NumOfCases(TkWidget):
 if __name__ == "__main__":
 
     root = Tk()
-    NumOfCases = NumOfCases(root).pack()
+    num_of_cases = NumOfCases(root).pack()
     root.mainloop()

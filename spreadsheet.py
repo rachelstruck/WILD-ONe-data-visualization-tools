@@ -10,5 +10,5 @@ class Spreadsheet(TkWidget):
 if __name__ == "__main__":
 
     root = Tk()
-    Spreadsheet = Spreadsheet(root).pack()
+    spreadsheet = Spreadsheet(root).pack()
     root.mainloop()
