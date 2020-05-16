@@ -1,4 +1,4 @@
-# Time Plot Applet
+"""Time Plot Applet"""
 
 from toolbox import *
 

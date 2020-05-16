@@ -1,4 +1,4 @@
-# Spreadsheet Applet
+"""Spreadsheet Applet"""
 
 from toolbox import *
 

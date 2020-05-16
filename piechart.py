@@ -1,4 +1,4 @@
-# Pie Chart Applet
+"""Pie Chart Applet"""
 
 from toolbox import *
 

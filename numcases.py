@@ -1,4 +1,4 @@
-# Number of Cases Applet
+"""Number of Cases Applet"""
 
 from toolbox import *
 

@@ -1,8 +1,15 @@
 """A set of tools accessible throughout the entire program.
 
 Contains:
-* data-continer classes (namely, the Condition class)
+* data-continer class (the Condition class)
 * gui classes that behave like tkinter widgets
+    - TkWidget -- parent class of all tk-like classes
+    - ConditionSelect -- menu button for selecting a condition object
+    - Window -- parent class of listbox-like classes
+    - VarWindow -- listbox to select items from a particular condition
+    - SelectedWindow -- display selected items
+    - Filter -- simple entry bar for entering filter strings
+    - VarSelector -- gui to select any item from any condition
 """
 
 from tkinter import *
@@ -14,9 +21,17 @@ datapath = r"C:\Users\buffs\Documents\cases.xls"
 cases = pd.read_html(datapath)[0]
 
 ConditionDict = {}
+# Retrieve a condition object from its string name
 
 
 class Condition:
+    """Store the case data of a specific data heading.
+
+    name -- the string name of the data header.
+    isgrouped -- whether each case entry has multiple values separated by " / ".
+    series -- the corresponding series in cases with null values removed.
+    array -- the series as a array-like object with duplicates removed.
+    """
 
     def __init__(self, name, isgrouped=False):
         self.name = name
@@ -62,6 +77,11 @@ print("done\n")
 
 
 class TkWidget:
+    """Mimic the behavior of Tk widgets.
+
+    All methods have the same behavior as their tkinter counterparts.
+    """
+
     def grid(self, **kwargs):
         self.object.grid(**kwargs)
         return self
@@ -78,18 +98,36 @@ class TkWidget:
 
 
 class ConditionSelect(TkWidget):
+    """Create a menu button to select a particular condition.
+
+    Arguments:
+    frame -- the tkinter parent window
+
+    Public Methods: get, set, update_display, get_condition, set_tracefunc.
+    get and set extend the get and set methods on the displayed string variable.
+
+    Public Attributes:
+    object -- the button object itself
+    """
 
     def update_display(self, name):
+        """Set the name that the button displays and call the trace function.
+
+        Arguments:
+        name -- the string to be displayed by the button
+        """
         self.set(name)
         self.tracefunc()
     def _update_display_command(self, name):
         return lambda: self.update_display(name)
 
     def get_condition(self):
+        """Return the condition object currently displayed."""
         name = self.get()
         return ConditionDict[name]
 
     def set_tracefunc(self, tracefunc):
+        """Set a function to be called every time the display updates."""
         self.tracefunc = tracefunc
 
     def __init__(self, frame):
@@ -111,8 +149,13 @@ class ConditionSelect(TkWidget):
 
 
 class Window(TkWidget):
+    """Define shared methods for listbox-type classes.
+
+    Public Methods: get_selected
+    """
 
     def get_selected(self):
+        """Return a list of currently selected items."""
         index = self.listbox.curselection()
         selected = []
         for i in index:
@@ -121,8 +164,21 @@ class Window(TkWidget):
 
 
 class VarWindow(Window):
+    """Display and select the items of an array of a condition.
+
+    Public Methods: build_box, filter
+
+    Public Attributes:
+    object -- the frame everything that attatched to
+    listbox -- the Listbox object that displays the array
+    """
 
     def build_box(self, condition):
+        """Change the contents displayed.
+
+        Arguments:
+        condition -- the condition object you want to display
+        """
         self.condition = condition
         varlist = self.condition.array
         self.listbox.delete(0, "end")
@@ -130,6 +186,11 @@ class VarWindow(Window):
             self.listbox.insert(i, varlist[i])
 
     def filter(self, string):
+        """Filter the contents by some string.
+
+        Arguments:
+        string -- the string to filter by
+        """
         varlist = self.condition.array
         self.listbox.delete(0, "end")
         for var in varlist:
@@ -150,14 +211,24 @@ class VarWindow(Window):
 
 
 class SelectedWindow(Window):
+    """Display and store selected items.
+
+    Public Methods: add, remove
+
+    Public Attributes:
+    object -- the frame everything is attatched to
+    listbox -- the Listbox object that displays the contents
+    """
 
     def add(self, varlist):
+        """Add items from a list that are not already displayed."""
         allvars = self.listbox.get(0, last="end")
         for var in varlist:
             if var not in allvars:
                 self.listbox.insert(self.listbox.size(), var)
 
     def remove(self, *args):
+        """Remove all currently selected items."""
         index = list(self.listbox.curselection())
         index.sort(reverse=True)
         for i in index:
@@ -171,24 +242,41 @@ class SelectedWindow(Window):
 
 
 class Filter(TkWidget):
+    """Enter and trace filter strings.
+
+    Public Methods: get_filter, add_trace
+
+    Public Attributes:
+    object -- the frame everything is attatched to
+    """
 
     def get_filter(self):
+        """Return the current filter."""
         return self._filter.get()
 
     def add_trace(self, tracefunc):
+        """Set a function to execute every time the filter changes."""
         self._filter.trace_add("write", tracefunc)
 
     def __init__(self, frame):
         self.object = Frame(frame)
         self._label = Label(self.object, text="Filter: ").pack(side="left")
         self._filter = StringVar()
-        self.entry = Entry(self.object,
+        self._entry = Entry(self.object,
             textvariable=self._filter).pack(side="right")
 
 
 class VarSelector(TkWidget):
+    """Insert a gui for selecting specific data filters for the case data.
+
+    Public Methods: add
+
+    Public Attributes:
+    object -- the frame everything is attatched to
+    """
 
     def add(self, *args):
+        """Add all selected items to the display window."""
         selected = self._var_window.get_selected()
         addlist = []
         for i in selected:

@@ -1,4 +1,4 @@
-# Home Window
+"""Home Window"""
 
 from toolbox import *
 

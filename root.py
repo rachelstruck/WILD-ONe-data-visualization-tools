@@ -1,4 +1,4 @@
-# Main window of the Application
+"""Main window of the Application"""
 
 from tkinter import *
 from toolbox import *
