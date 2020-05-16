@@ -17,6 +17,5 @@ Planned Features List:
  * backend function for data filtering
 
 Todo:
- * Add docstrings to high level functions and classes in toolbox.py
  * Restructure supporting files into a module
  * add toy data to run program without data loaded
