@@ -9,13 +9,12 @@ Dependencies list:
 
 Planned Features List:
  * dedicated data loading system
-     - proper loading of grouped data types
  * simple total number of cases tool
  * implement spreadsheet creator
  * implement graphing utility
  * implement pie chart creator
- * backend function for data filtering
+ * copy-paste functionality for data filters between applets
 
 Todo:
- * Restructure supporting files into a module
- * add toy data to run program without data loaded
+ * Restructure core files into a module
+ * Add date filtering functionality

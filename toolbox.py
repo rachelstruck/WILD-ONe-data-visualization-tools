@@ -1,7 +1,6 @@
 """A set of tools accessible throughout the entire program.
 
 Contains:
-* data-continer class (the Condition class)
 * gui classes that behave like tkinter widgets
     - TkWidget -- parent class of all tk-like classes
     - ConditionSelect -- menu button for selecting a condition object
@@ -13,80 +12,7 @@ Contains:
 """
 
 from tkinter import *
-import pandas as pd
-import numpy as np
-
-condition_tup = (
-"Species", "Admit. Life Stage", "Rescue Jurisdiction",
-"Circumstances of Rescue", "Injury", "Disposition", "Disposition Addit.",
-"Disposition Jurisdiction", "To Whom"
-)
-toy_data = np.repeat("None", len(condition_tup)).reshape(1, 9)
-# Toy data to make the program run when real data is not loaded
-
-print("loading case data...")
-datapath = r"not a valid path"
-try:
-    cases = pd.read_html(datapath)[0]
-except ValueError:
-    print("data not found, loading toy data...")
-    cases = pd.DataFrame(toy_data, columns=condition_tup)
-
-
-ConditionDict = {}
-# Retrieve a condition object from its string name
-
-
-class Condition:
-    """Store the case data of a specific data heading.
-
-    name -- the string name of the data header.
-    isgrouped -- whether each case entry has multiple values separated by " / ".
-    series -- the corresponding series in cases with null values removed.
-    array -- the series as a array-like object with duplicates removed.
-    """
-
-    def __init__(self, name, isgrouped=False):
-        self.name = name
-        self.isgrouped = isgrouped
-        self.series = cases[self.name].dropna()
-        self.array = self.series.drop_duplicates().array
-
-        if isgrouped:
-            items = []
-            for I in self.array:
-                for i in I.split(" / "):
-                    if i not in items:
-                        items.append(i)
-            self.array = np.array(items)
-
-            falsearray = np.zeros((cases.index.size, self.array.size),
-                                  dtype=bool)
-            self.df = pd.DataFrame(falsearray, index=cases.index,
-                                   columns=self.array)
-
-            for case in self.series.index:
-                I = self.series[case].split(" / ")
-                for i in I:
-                    self.df.at[case, i] = True
-
-        ConditionDict[self.name] = self
-
-
-print("processing case data...")
-Species = Condition("Species")
-Admit_Life_Stage = Condition("Admit. Life Stage")
-Rescue_Jurisdiction = Condition("Rescue Jurisdiction")
-Circumstances_of_Rescue = Condition("Circumstances of Rescue", isgrouped=True)
-Injury = Condition("Injury", isgrouped=True)
-Disposition = Condition("Disposition")
-Disposition_Addit = Condition("Disposition Addit.")
-Disposition_Jurisdiction = Condition("Disposition Jurisdiction")
-To_Whom = Condition("To Whom")
-
-defaultCondition = list(ConditionDict.keys())[0]
-
-print("done\n")
+from datatools import *
 
 
 class TkWidget:
@@ -137,7 +63,7 @@ class ConditionSelect(TkWidget):
     def get_condition(self):
         """Return the condition object currently displayed."""
         name = self.get()
-        return ConditionDict[name]
+        return condition_dict[name]
 
     def set_tracefunc(self, tracefunc):
         """Set a function to be called every time the display updates."""
@@ -147,7 +73,7 @@ class ConditionSelect(TkWidget):
         self._stringvar = StringVar()
         self.get = self._stringvar.get
         self.set = self._stringvar.set
-        self.set(defaultCondition)
+        self.set(defaultCondition.name)
         def tracefunc(self): None
 
         self.object = Menubutton(
@@ -155,10 +81,10 @@ class ConditionSelect(TkWidget):
         self._menu = Menu(self.object, tearoff=0)
         self.object["menu"] = self._menu
 
-        for name in ConditionDict.keys():
+        for condition in condition_list:
             self._menu.add_command(
-                label=name,
-                command=self._update_display_command(name))
+                label=condition.name,
+                command=self._update_display_command(condition_list.name))
 
 
 class Window(TkWidget):
@@ -220,7 +146,7 @@ class VarWindow(Window):
         self._sbar.pack(side="right", fill="y")
         self._sbar.config(command=self.listbox.yview)
 
-        self.build_box(ConditionDict[defaultCondition])
+        self.build_box(defaultCondition)
 
 
 class SelectedWindow(Window):
