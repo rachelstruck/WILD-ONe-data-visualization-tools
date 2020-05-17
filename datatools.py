@@ -7,6 +7,7 @@ Contains:
 * load_data -- function that attempts to load data at a specified path
 * condition_list -- list of condition objects in use
 * defaultCondition -- condition object to default to
+* filter_cases -- filter case data with a set of filters
 """
 
 import pandas as pd
@@ -90,11 +91,22 @@ defaultCondition = condition_list[0]
 # Condition object to default to
 print("done\n")
 
+def _single_filter_indicies(filter):
+    condition_name, item = filter
+    condition = condition_dict[condition_name]
+    if condition.isgrouped:
+        indicies = cases[condition.df[item]].index
+    else:
+        indicies = cases[lambda df: df[condition_name] == item].index
+    return indicies
+
+
 def filter_cases(filters):
     """Filter cases by list of selected filters.
 
     Arguments:
     filters -- list of selected filters
+        - Should be of the form [(condition, item), (condition, item)]
     """
     index_dict = {}
     # Temporarily stores indicies
@@ -107,23 +119,30 @@ def filter_cases(filters):
     for filter in filters:
         # Appends a list of indicies from filtering each individual item
         # into the list that corresponds to the condition name in index_dict
-        condition_name, item = filter
-        condition = condition_dict[condition_name]
-        if condition.isgrouped:
-            indicies = cases[condition.df[item]].index
-            index_dict[condition_name].append(indicies)
-        else:
-            indicies = cases[lambda df: df[condition_name] == item].index
-            index_dict[condition_name].append(indicies)
+        indicies = _single_filter_indicies(filter)
+        condition_name, _ = filter
+        index_dict[condition_name].append(indicies)
 
-    for condition_name in index_dict.keys():
+    print(index_dict)
+
+    for condition_name, indicies in index_dict.items():
         # Consolodates each list of lists in index_dict into one list
-        indicies = index_dict[condition_name]
-        index_dict[condition_name] = set(indicies[0]).union(*indicies)
+        if len(indicies) == 0:
+            index_dict[condition_name] = []
+        else:
+            index_dict[condition_name] = set(indicies[0]).union(*indicies)
 
     condition_indicies = list(index_dict.values())
-    filtered_indicies = set(condition_indicies[0]).intersection(*condition_indicies)
+    if len(condition_indicies) == 0:
+        filtered_indicies = []
+    else:
+        filtered_indicies = set(condition_indicies[0]).intersection(*condition_indicies)
     filtered_indicies = list(filtered_indicies)
     return cases.iloc[filtered_indicies]
     # Intersects all lists in index_dict and returns the case data
     # at those indicies
+
+filters = [
+("Species", "Great Horned Owl"),
+("Injury", "Skeleton"),
+]

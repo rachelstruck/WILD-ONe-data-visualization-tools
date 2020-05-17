@@ -15,6 +15,9 @@ Planned Features List:
  * implement pie chart creator
  * copy-paste functionality for data filters between applets
 
+ Potential Features List:
+  * custom filter creation using set notation
+
 Todo:
  * Restructure core files into a module
  * Add date filtering functionality

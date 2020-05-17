@@ -84,7 +84,7 @@ class ConditionSelect(TkWidget):
         for condition in condition_list:
             self._menu.add_command(
                 label=condition.name,
-                command=self._update_display_command(condition_list.name))
+                command=self._update_display_command(condition.name))
 
 
 class Window(TkWidget):
