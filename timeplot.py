@@ -1,14 +1,15 @@
 """Time Plot Applet"""
 
-from toolbox import *
+from toolboxreborn import *
 
-class TimePlot(TkWidget):
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self.label = Label(self.object, text="Time Plot").pack()
+class TimePlot(Frame):
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self.label = Label(self, text="Time Plot")
+        self.label.pack()
 
 if __name__ == "__main__":
 
     root = Tk()
-    time_plot = TimePlot(root).pack()
+    TimePlot(root).pack()
     root.mainloop()
