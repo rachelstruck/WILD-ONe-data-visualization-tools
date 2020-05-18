@@ -1,7 +1,7 @@
 """Number of Cases Applet"""
 
 from toolbox import *
-from os import startfile
+import webbrowser as wb
 
 
 class NumOfCases(Frame):
@@ -16,7 +16,7 @@ class NumOfCases(Frame):
     def _open(self):
         if self._compiled_cases is not None:
             self._compiled_cases.to_csv("compiled cases.csv")
-            startfile("compiled cases.csv")
+            wb.open("compiled cases.csv")
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
