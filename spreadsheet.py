@@ -1,6 +1,6 @@
 """Spreadsheet Applet"""
 
-from toolboxreborn import *
+from toolbox import *
 
 class Spreadsheet(Frame):
     def __init__(self, parent):

@@ -1,6 +1,6 @@
 """Home Window"""
 
-from toolboxreborn import *
+from toolbox import *
 
 class Home(Frame):
     def __init__(self, parent):

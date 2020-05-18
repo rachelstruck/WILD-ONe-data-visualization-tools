@@ -1,7 +1,7 @@
 """Main window of the Application"""
 
 from tkinter import *
-from toolboxreborn import *
+from toolbox import *
 
 from numcases import NumOfCases
 from home import Home

@@ -1,6 +1,6 @@
 """Pie Chart Applet"""
 
-from toolboxreborn import *
+from toolbox import *
 
 class PieChart(Frame):
     def __init__(self, parent):

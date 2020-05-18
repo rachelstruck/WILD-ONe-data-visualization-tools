@@ -1,6 +1,6 @@
 """Number of Cases Applet"""
 
-from toolboxreborn import *
+from toolbox import *
 from os import startfile
 
 

@@ -1,6 +1,6 @@
 """Time Plot Applet"""
 
-from toolboxreborn import *
+from toolbox import *
 
 class TimePlot(Frame):
     def __init__(self, parent):
