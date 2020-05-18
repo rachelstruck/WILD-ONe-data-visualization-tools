@@ -4,7 +4,7 @@ from toolbox import *
 from os import startfile
 
 
-class NumOfCases(TkWidget):
+class NumOfCases(Frame):
 
     def _compile(self):
         filters = self._var_selector.get_selected()
@@ -17,11 +17,12 @@ class NumOfCases(TkWidget):
             self._compiled_cases.to_csv("compiled cases.csv")
             startfile("compiled cases.csv")
 
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self._var_selector = VarSelector(self.object)
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self._var_selector = VarSelector(self)
         self._var_selector.grid(row=0, column=0)
-        self._right_frame = Frame(self.object).grid(row=0, column=1)
+        self._right_frame = Frame(self)
+        self._right_frame.grid(row=0, column=1)
         self._num_variable = IntVar()
         self._num_variable.set(np.nan)
         self._num_label = Label(self._right_frame,
@@ -29,7 +30,8 @@ class NumOfCases(TkWidget):
         self._num_label.grid(row=0, column=0)
         self._open_button = Button(
             self._right_frame, text="Open Compiled Data",
-            command=self._open).grid(row=1, column=0)
+            command=self._open)
+        self._open_button.grid(row=1, column=0)
         self._compile_button = Button(self._right_frame, text="Compile Data",
                                       command=self._compile)
         self._compile_button.grid(row=2, column=0)

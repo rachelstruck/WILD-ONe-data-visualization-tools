@@ -1,10 +1,8 @@
-"""A set of tools accessible throughout the entire program.
+"""A set of gui tools accessible throughout the entire program.
 
 Contains:
 * gui classes that behave like tkinter widgets
-    - TkWidget -- parent class of all tk-like classes
     - ConditionSelect -- menu button for selecting a condition object
-    - Window -- parent class of listbox-like classes
     - VarWindow -- listbox to select items from a particular condition
     - SelectedWindow -- display selected items
     - Filter -- simple entry bar for entering filter strings
@@ -15,38 +13,15 @@ from tkinter import *
 from datatools import *
 
 
-class TkWidget:
-    """Mimic the behavior of Tk widgets.
-
-    All methods have the same behavior as their tkinter counterparts.
-    """
-
-    def grid(self, **kwargs):
-        self.object.grid(**kwargs)
-        return self
-
-    def pack(self, **kwargs):
-        self.object.pack(**kwargs)
-        return self
-
-    def pack_forget(self):
-        self.object.pack_forget()
-
-    def bind(self, *args):
-        self.object.bind(*args)
-
-
-class ConditionSelect(TkWidget):
+class ConditionSelect(Menubutton):
     """Create a menu button to select a particular condition.
 
     Arguments:
-    frame -- the tkinter parent window
+    parent -- the tkinter parent window
 
     Public Methods: get, set, update_display, get_condition, set_tracefunc.
-    get and set extend the get and set methods on the displayed string variable.
-
-    Public Attributes:
-    object -- the button object itself
+    get and set extend the get and set methods on the displayed string
+    variable.
     """
 
     def update_display(self, name):
@@ -56,7 +31,8 @@ class ConditionSelect(TkWidget):
         name -- the string to be displayed by the button
         """
         self.set(name)
-        self.tracefunc()
+        if self.tracefunc is not None:
+            self.tracefunc()
     def _update_display_command(self, name):
         return lambda: self.update_display(name)
 
@@ -69,17 +45,18 @@ class ConditionSelect(TkWidget):
         """Set a function to be called every time the display updates."""
         self.tracefunc = tracefunc
 
-    def __init__(self, frame):
+    def __init__(self, parent):
         self._stringvar = StringVar()
         self.get = self._stringvar.get
         self.set = self._stringvar.set
         self.set(defaultCondition.name)
-        def tracefunc(self): None
 
-        self.object = Menubutton(
-            frame, textvariable=self._stringvar, relief="raised")
-        self._menu = Menu(self.object, tearoff=0)
-        self.object["menu"] = self._menu
+        self.tracefunc = None
+
+        Menubutton.__init__(
+            self, parent, textvariable=self._stringvar, relief="raised")
+        self._menu = Menu(self, tearoff=0)
+        self["menu"] = self._menu
 
         for condition in condition_list:
             self._menu.add_command(
@@ -87,28 +64,12 @@ class ConditionSelect(TkWidget):
                 command=self._update_display_command(condition.name))
 
 
-class Window(TkWidget):
-    """Define shared methods for listbox-type classes.
-
-    Public Methods: get_selected
-    """
-
-    def get_selected(self):
-        """Return a list of currently selected items."""
-        index = self.listbox.curselection()
-        selected = []
-        for i in index:
-            selected.append(self.listbox.get(i))
-        return selected
-
-
-class VarWindow(Window):
+class VarWindow(Frame):
     """Create window to select the items of a condition.
 
     Public Methods: build_box, filter
 
     Public Attributes:
-    object -- the frame everything that attatched to
     listbox -- the Listbox object that displays the array
     """
 
@@ -136,11 +97,19 @@ class VarWindow(Window):
             if string.lower() in var.lower():
                 self.listbox.insert(self.listbox.size(), var)
 
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self._sbar = Scrollbar(self.object)
+    def get_selected(self):
+        """Return a list of currently selected items."""
+        index = self.listbox.curselection()
+        selected = []
+        for i in index:
+            selected.append(self.listbox.get(i))
+        return selected
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self._sbar = Scrollbar(self)
         self.listbox = Listbox(
-            self.object, yscrollcommand=self._sbar.set,
+            self, yscrollcommand=self._sbar.set,
             width=50, height=19, selectmode="extended")
         self.listbox.pack(side="left")
         self._sbar.pack(side="right", fill="y")
@@ -149,13 +118,12 @@ class VarWindow(Window):
         self.build_box(defaultCondition)
 
 
-class SelectedWindow(Window):
+class SelectedWindow(Frame):
     """Display and store selected items.
 
-    Public Methods: add, remove
+    Public Methods: add, remove, get_displayed
 
     Public Attributes:
-    object -- the frame everything is attatched to
     listbox -- the Listbox object that displays the contents
     """
 
@@ -177,20 +145,17 @@ class SelectedWindow(Window):
         """Return the contents of the listbox."""
         return self.listbox.get(0, last="end")
 
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self.listbox = Listbox(self.object, width=50, height=19,
-            selectmode="extended")
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self.listbox = Listbox(self, width=50, height=19,
+                               selectmode="extended")
         self.listbox.pack()
 
 
-class Filter(TkWidget):
+class Filter(Frame):
     """Enter and trace filter strings.
 
     Public Methods: get_filter, add_trace
-
-    Public Attributes:
-    object -- the frame everything is attatched to
     """
 
     def get_filter(self):
@@ -201,21 +166,18 @@ class Filter(TkWidget):
         """Set a function to execute every time the filter changes."""
         self._filter.trace_add("write", tracefunc)
 
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self._label = Label(self.object, text="Filter: ").pack(side="left")
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self._label = Label(self, text="Filter: ").pack(side="left")
         self._filter = StringVar()
-        self._entry = Entry(self.object,
+        self._entry = Entry(self,
             textvariable=self._filter).pack(side="right")
 
 
-class VarSelector(TkWidget):
+class VarSelector(Frame):
     """Insert a gui for selecting specific data filters for the case data.
 
     Public Methods: add
-
-    Public Attributes:
-    object -- the frame everything is attatched to
 
     *Notes: Enter and BackSpace are keyboard shortcuts for add and remove
     """
@@ -239,32 +201,33 @@ class VarSelector(TkWidget):
     def get_selected(self):
         return self._selected_window.get_displayed()
 
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self._condition_selector = ConditionSelect(self.object)
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self._condition_selector = ConditionSelect(self)
         self._condition_selector.grid(row=0, column=0)
         self._condition_selector.set_tracefunc(self._condition_trace)
-        self._var_window = VarWindow(self.object).grid(row=1, column=0)
-        self._selected_window = SelectedWindow(self.object).grid(row=1, column=1)
+        self._var_window = VarWindow(self)
+        self._var_window.grid(row=1, column=0)
+        self._selected_window = SelectedWindow(self)
+        self._selected_window.grid(row=1, column=1)
+        print(type(self._selected_window))
         self._add_button = Button(
-            self.object, text="Add Variable",
+            self, text="Add Variable",
             command=self.add).grid(row=2, column=0)
         self._remove_button = Button(
-            self.object, text="Remove Variable",
+            self, text="Remove Variable",
             command=self._selected_window.remove).grid(row=2, column=1)
-        self._filter = Filter(self.object).grid(row=3, column=0)
+        self._filter = Filter(self)
+        self._filter.grid(row=3, column=0)
         self._filter.add_trace(self._filter_trace)
 
         self._var_window.listbox.bind("<Return>", self.add)
         self._selected_window.listbox.bind("<BackSpace>",
-                                         self._selected_window.remove)
+                                           self._selected_window.remove)
 
 
 if __name__ == "__main__":
 
     root = Tk()
-    root.title("toolbox")
-
-    var_selector = VarSelector(root).pack()
-
+    VarSelector(root).pack()
     root.mainloop()

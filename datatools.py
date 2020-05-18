@@ -35,7 +35,7 @@ def load_data(datapath):
         print("data not found, loading toy data...")
         cases = pd.DataFrame(_toy_data, columns=_condition_tup)
 
-_datapath = "C:/Users/buffs/Documents/cases.xls"
+_datapath = "C:/Users/owner/Documents/cases.xls"
 load_data(_datapath)
 
 condition_dict = {}
@@ -110,7 +110,7 @@ def filter_cases(filters):
     """
     if len(filters) == 0:
         return cases
-        
+
     index_dict = {}
     # Temporarily stores indicies
 

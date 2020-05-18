@@ -2,13 +2,14 @@
 
 from toolbox import *
 
-class Home(TkWidget):
-    def __init__(self, frame):
-        self.object = Frame(frame)
-        self.label = Label(self.object, text="Home").pack()
+class Home(Frame):
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self.label = Label(self, text="Home")
+        self.label.pack()
 
 if __name__ == "__main__":
 
     root = Tk()
-    home = Home(root).pack()
+    Home(root).pack()
     root.mainloop()
