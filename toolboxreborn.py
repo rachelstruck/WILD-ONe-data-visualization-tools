@@ -1,3 +1,14 @@
+"""A set of gui tools accessible throughout the entire program.
+
+Contains:
+* gui classes that behave like tkinter widgets
+    - ConditionSelect -- menu button for selecting a condition object
+    - VarWindow -- listbox to select items from a particular condition
+    - SelectedWindow -- display selected items
+    - Filter -- simple entry bar for entering filter strings
+    - VarSelector -- gui to select any item from any condition
+"""
+
 from tkinter import *
 from datatools import *
 
@@ -6,7 +17,7 @@ class ConditionSelect(Menubutton):
     """Create a menu button to select a particular condition.
 
     Arguments:
-    frame -- the tkinter parent window
+    parent -- the tkinter parent window
 
     Public Methods: get, set, update_display, get_condition, set_tracefunc.
     get and set extend the get and set methods on the displayed string
@@ -59,7 +70,6 @@ class VarWindow(Frame):
     Public Methods: build_box, filter
 
     Public Attributes:
-    object -- the frame everything that attatched to
     listbox -- the Listbox object that displays the array
     """
 
@@ -111,7 +121,7 @@ class VarWindow(Frame):
 class SelectedWindow(Frame):
     """Display and store selected items.
 
-    Public Methods: add, remove
+    Public Methods: add, remove, get_displayed
 
     Public Attributes:
     listbox -- the Listbox object that displays the contents
@@ -146,9 +156,6 @@ class Filter(Frame):
     """Enter and trace filter strings.
 
     Public Methods: get_filter, add_trace
-
-    Public Attributes:
-    object -- the frame everything is attatched to
     """
 
     def get_filter(self):
@@ -171,9 +178,6 @@ class VarSelector(Frame):
     """Insert a gui for selecting specific data filters for the case data.
 
     Public Methods: add
-
-    Public Attributes:
-    object -- the frame everything is attatched to
 
     *Notes: Enter and BackSpace are keyboard shortcuts for add and remove
     """
