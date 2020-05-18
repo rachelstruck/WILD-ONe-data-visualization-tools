@@ -19,6 +19,5 @@ Planned Features List:
   * custom filter creation using set notation
 
 Todo:
- * Clean up new toolboxreborn code
  * Restructure core files into a module
  * Add date filtering functionality
