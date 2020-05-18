@@ -6,6 +6,7 @@ Dependencies list:
  * pandas
  * matplotlib
  * numpy
+ * webbrowser
 
 Planned Features List:
  * dedicated data loading system
