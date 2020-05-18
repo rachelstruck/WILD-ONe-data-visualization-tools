@@ -34,7 +34,7 @@ Button(button_frame, text="Time Plot", width=button_width,
     command=lambda: switch_window(time_plot)).pack()
 Button(button_frame, text="Pie Chart", width=button_width,
     command=lambda: switch_window(pie_chart)).pack()
-button_frame.grid(column=0, row=0)
+button_frame.grid(column=0, row=0, sticky="NW")
 
 # Creates content at the right
 content_frame = Frame(root)
