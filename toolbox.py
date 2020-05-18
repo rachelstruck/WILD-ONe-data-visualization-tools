@@ -173,6 +173,10 @@ class SelectedWindow(Window):
         for i in index:
             self.listbox.delete(i)
 
+    def get_displayed(self):
+        """Return the contents of the listbox."""
+        return self.listbox.get(0, last="end")
+
     def __init__(self, frame):
         self.object = Frame(frame)
         self.listbox = Listbox(self.object, width=50, height=19,
@@ -231,6 +235,9 @@ class VarSelector(TkWidget):
     def _condition_trace(self):
         condition = self._condition_selector.get_condition()
         self._var_window.build_box(condition)
+
+    def get_selected(self):
+        return self._selected_window.get_displayed()
 
     def __init__(self, frame):
         self.object = Frame(frame)

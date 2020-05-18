@@ -108,6 +108,9 @@ def filter_cases(filters):
     filters -- list of selected filters
         - Should be of the form [(condition, item), (condition, item)]
     """
+    if len(filters) == 0:
+        return cases
+        
     index_dict = {}
     # Temporarily stores indicies
 
@@ -122,8 +125,6 @@ def filter_cases(filters):
         indicies = _single_filter_indicies(filter)
         condition_name, _ = filter
         index_dict[condition_name].append(indicies)
-
-    print(index_dict)
 
     for condition_name, indicies in index_dict.items():
         # Consolodates each list of lists in index_dict into one list
@@ -141,8 +142,3 @@ def filter_cases(filters):
     return cases.iloc[filtered_indicies]
     # Intersects all lists in index_dict and returns the case data
     # at those indicies
-
-filters = [
-("Species", "Great Horned Owl"),
-("Injury", "Skeleton"),
-]
