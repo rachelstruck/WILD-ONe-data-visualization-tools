@@ -8,7 +8,8 @@ class NumOfCases(Frame):
 
     def _compile(self):
         filters = self._var_selector.get_selected()
-        self._compiled_cases = filter_cases(filters)
+        daterange = self._var_selector.get_daterange()
+        self._compiled_cases = filter_cases(filters, daterange=daterange)
         count = self._compiled_cases.shape[0]
         self._num_variable.set(count)
 

@@ -20,4 +20,3 @@ Planned Features List:
 
 Todo:
  * Restructure core files into a module
- * Add date filtering functionality

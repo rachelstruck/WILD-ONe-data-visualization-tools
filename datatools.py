@@ -7,7 +7,7 @@ Contains:
 * load_data -- function that attempts to load data at a specified path
 * condition_list -- list of condition objects in use
 * defaultCondition -- condition object to default to
-* filter_cases -- filter case data with a set of filters
+* filter_cases -- filter case data with a set of filters and/or a daterange
 """
 
 import pandas as pd
@@ -31,6 +31,8 @@ def load_data(datapath):
     print("loading case data...")
     try:
         cases = pd.read_html(datapath)[0]
+        cases["Admit Date"] = pd.to_datetime(cases["Admit Date"],
+                                                  errors="coerce")
     except ValueError:
         print("data not found, loading toy data...")
         cases = pd.DataFrame(_toy_data, columns=_condition_tup)
@@ -91,25 +93,30 @@ defaultCondition = condition_list[0]
 # Condition object to default to
 print("done\n")
 
-def _single_filter_indicies(filter):
-    condition_name, item = filter
-    condition = condition_dict[condition_name]
-    if condition.isgrouped:
-        indicies = cases[condition.df[item]].index
-    else:
-        indicies = cases[lambda df: df[condition_name] == item].index
-    return indicies
-
-
-def filter_cases(filters):
-    """Filter cases by list of selected filters.
+def filter_cases(filters, daterange=(pd.NaT, pd.NaT)):
+    """Filter cases by list of selected filters and range of dates.
 
     Arguments:
     filters -- list of selected filters
         - Should be of the form [(condition, item), (condition, item)]
+    daterange -- range of dates to filter by
+        - Should be a tuple in the form (from_date, to_date)
     """
+    cases_prime = cases
+
+    if type(daterange[0]) == type(pd.NaT):
+        pass
+    else:
+        cases_prime = cases_prime[
+            lambda df: df["Admit Date"] >= daterange[0]]
+    if type(daterange[1]) == type(pd.NaT):
+        pass
+    else:
+        cases_prime = cases_prime[
+            lambda df: df["Admit Date"] <= daterange[1]]
+
     if len(filters) == 0:
-        return cases
+        return cases_prime
 
     index_dict = {}
     # Temporarily stores indicies
@@ -122,8 +129,12 @@ def filter_cases(filters):
     for filter in filters:
         # Appends a list of indicies from filtering each individual item
         # into the list that corresponds to the condition name in index_dict
-        indicies = _single_filter_indicies(filter)
-        condition_name, _ = filter
+        condition_name, item = filter
+        condition = condition_dict[condition_name]
+        if condition.isgrouped:
+            indicies = cases_prime[condition.df[item]].index
+        else:
+            indicies = cases_prime[lambda df: df[condition_name] == item].index
         index_dict[condition_name].append(indicies)
 
     for condition_name, indicies in index_dict.items():
@@ -139,6 +150,6 @@ def filter_cases(filters):
     else:
         filtered_indicies = set(condition_indicies[0]).intersection(*condition_indicies)
     filtered_indicies = list(filtered_indicies)
-    return cases.iloc[filtered_indicies]
+    return cases_prime.loc[filtered_indicies]
     # Intersects all lists in index_dict and returns the case data
     # at those indicies

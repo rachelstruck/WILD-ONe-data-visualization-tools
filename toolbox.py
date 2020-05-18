@@ -6,6 +6,7 @@ Contains:
     - VarWindow -- listbox to select items from a particular condition
     - SelectedWindow -- display selected items
     - Filter -- simple entry bar for entering filter strings
+    - DateEntry -- entry bars to enter a range of dates
     - VarSelector -- gui to select any item from any condition
 """
 
@@ -174,10 +175,38 @@ class Filter(Frame):
             textvariable=self._filter).pack(side="right")
 
 
+class DateEntry(Frame):
+    """Enter and retrieve a date range from the user.
+
+    Public Methods: get_daterange
+    """
+
+    def get_daterange(self):
+        """Return the date range entered."""
+        from_date = self._from_var.get()
+        from_date = pd.to_datetime(from_date, errors="coerce")
+        to_date = self._to_var.get()
+        to_date = pd.to_datetime(to_date, errors="coerce")
+        return (from_date, to_date)
+
+    def __init__(self, parent):
+        Frame.__init__(self, parent)
+        self._from_label = Label(self, text="from: ")
+        self._from_label.pack(side="left")
+        self._from_var = StringVar()
+        self._from_entry = Entry(self, textvariable=self._from_var)
+        self._from_entry.pack(side="left")
+        self._to_label = Label(self, text="to: ")
+        self._to_label.pack(side="left")
+        self._to_var = StringVar()
+        self._to_entry = Entry(self, textvariable=self._to_var)
+        self._to_entry.pack(side="left")
+
+
 class VarSelector(Frame):
     """Insert a gui for selecting specific data filters for the case data.
 
-    Public Methods: add
+    Public Methods: add, get_selected, get_daterange
 
     *Notes: Enter and BackSpace are keyboard shortcuts for add and remove
     """
@@ -199,7 +228,12 @@ class VarSelector(Frame):
         self._var_window.build_box(condition)
 
     def get_selected(self):
+        """Return all selected items in selected window."""
         return self._selected_window.get_displayed()
+
+    def get_daterange(self):
+        """Return the date range entered."""
+        return self._date_entry.get_daterange()
 
     def __init__(self, parent):
         Frame.__init__(self, parent)
@@ -210,7 +244,6 @@ class VarSelector(Frame):
         self._var_window.grid(row=1, column=0)
         self._selected_window = SelectedWindow(self)
         self._selected_window.grid(row=1, column=1)
-        print(type(self._selected_window))
         self._add_button = Button(
             self, text="Add Variable",
             command=self.add).grid(row=2, column=0)
@@ -220,6 +253,8 @@ class VarSelector(Frame):
         self._filter = Filter(self)
         self._filter.grid(row=3, column=0)
         self._filter.add_trace(self._filter_trace)
+        self._date_entry = DateEntry(self)
+        self._date_entry.grid(row=4, column=0, columnspan=2)
 
         self._var_window.listbox.bind("<Return>", self.add)
         self._selected_window.listbox.bind("<BackSpace>",
