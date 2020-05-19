@@ -8,6 +8,7 @@ from home import Home
 from spreadsheet import Spreadsheet
 from timeplot import TimePlot
 from piechart import PieChart
+from file import File
 
 
 def switch_window(win):
@@ -26,6 +27,8 @@ button_width = 13
 button_frame = Frame(root)
 Button(button_frame, text="Home", width=button_width,
     command=lambda: switch_window(home)).pack()
+Button(button_frame, text="File",width=button_width,
+    command=lambda: switch_window(file)).pack()
 Button(button_frame, text="Number of Cases", width=button_width,
     command=lambda: switch_window(num_of_cases)).pack()
 Button(button_frame, text="Spreadsheet", width=button_width,
@@ -44,6 +47,9 @@ main_window_list = []
 
 home = Home(content_frame)
 main_window_list.append(home)
+
+file = File(content_frame)
+main_window_list.append(file)
 
 num_of_cases = NumOfCases(content_frame)
 main_window_list.append(num_of_cases)

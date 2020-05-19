@@ -37,8 +37,7 @@ def load_data(datapath):
         print("data not found, loading toy data...")
         cases = pd.DataFrame(_toy_data, columns=_condition_tup)
 
-_datapath = "C:/Users/owner/Documents/cases.xls"
-load_data(_datapath)
+cases = pd.DataFrame(_toy_data, columns=_condition_tup)
 
 condition_dict = {}
 # Retrieve a condition object from its string name
