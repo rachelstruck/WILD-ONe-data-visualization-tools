@@ -50,14 +50,14 @@ class Condition:
     isgrouped -- whether each case entry has multiple values separated by " / ".
     series -- the corresponding series in cases with null values removed.
     array -- the series as an array-like object with duplicates removed.
-    df -- (only for grouped data) a dataframe acting as a truth table
+    df -- a dataframe acting as a truth table
     """
 
     def __init__(self, name, isgrouped=False):
         self.name = name
         self.isgrouped = isgrouped
         self.series = cases[self.name].dropna()
-        self.array = self.series.drop_duplicates().array
+        self.array = np.array(self.series.drop_duplicates().array)
 
         if isgrouped:
             items = []
@@ -76,6 +76,16 @@ class Condition:
                 I = self.series[case].split(" / ")
                 for i in I:
                     self.df.at[case, i] = True
+
+        else:
+            falsearray = np.zeros((cases.index.size, self.array.size),
+                                  dtype=bool)
+            self.df = pd.DataFrame(falsearray, index=cases.index,
+                                   columns=self.array)
+
+            for case in self.series.index:
+                i = self.series[case]
+                self.df.at[case, i] = True
 
         condition_dict[self.name] = self
 
