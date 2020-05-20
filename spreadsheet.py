@@ -33,7 +33,6 @@ class Spreadsheet(Frame):
 
     def _compile(self):
         if not self._allow_compile:
-            print("NO")
             return
         self._allow_compile = False
         print("processing...")
