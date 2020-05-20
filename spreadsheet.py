@@ -2,8 +2,33 @@
 
 from toolbox import *
 import webbrowser as wb
+import threading
+import time
 
 class Spreadsheet(Frame):
+
+    def _compile_thread(self, index_matrix, index, column_matrix, columns):
+        intersect_matrix = index_matrix.T @ column_matrix
+        intersect_frame = pd.DataFrame(intersect_matrix, index=index,
+                                       columns=columns)
+        self._intersect_frame = intersect_frame
+
+        self._stop_processing()
+        print("done\n")
+        self._open()
+
+    def _start_processing_anim(self):
+        self._is_processing = True
+        num_dots = 0
+        while self._is_processing:
+            self._processing_var.set("processing" + "."*num_dots)
+            num_dots += 1
+            num_dots %= 4
+            time.sleep(0.5)
+
+    def _stop_processing(self):
+        self._is_processing = False
+        self._processing_var.set("done")
 
     def _compile(self):
         print("processing...")
@@ -18,12 +43,14 @@ class Spreadsheet(Frame):
         columns = column_condition.array
         column_matrix = column_condition.df.values.astype(int)
 
-        intersect_matrix = index_matrix.T @ column_matrix
-        intersect_frame = pd.DataFrame(intersect_matrix, index=index,
-                                       columns=columns)
-        self._intersect_frame = intersect_frame
-        print("done\n")
-        self._open()
+        t_compile = threading.Thread(
+            target=self._compile_thread,
+            args=(index_matrix, index, column_matrix, columns)
+            )
+        t_anim = threading.Thread(target=self._start_processing_anim)
+
+        t_compile.start()
+        t_anim.start()
 
     def _open(self):
         if self._intersect_frame is not None:
@@ -48,6 +75,12 @@ class Spreadsheet(Frame):
         self._compile_button = Button(
             self._right_frame, text="Compile Data", command=self._compile)
         self._compile_button.pack()
+        self._processing_var = StringVar()
+        self._processing_var.set("")
+        self._processing_label = Label(
+            self._right_frame, textvariable=self._processing_var)
+        self._processing_label.pack()
+        self._is_processing = False
 
 
 if __name__ == "__main__":
