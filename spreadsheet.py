@@ -28,9 +28,14 @@ class Spreadsheet(Frame):
 
     def _stop_processing(self):
         self._is_processing = False
+        self._allow_compile = True
         self._processing_var.set("done")
 
     def _compile(self):
+        if not self._allow_compile:
+            print("NO")
+            return
+        self._allow_compile = False
         print("processing...")
         filters = self._var_selector.get_selected()
         daterange = self._var_selector.get_daterange()
@@ -81,6 +86,7 @@ class Spreadsheet(Frame):
             self._right_frame, textvariable=self._processing_var)
         self._processing_label.pack()
         self._is_processing = False
+        self._allow_compile = True
 
 
 if __name__ == "__main__":
