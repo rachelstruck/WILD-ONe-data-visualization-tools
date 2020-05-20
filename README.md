@@ -7,6 +7,8 @@ Dependencies list:
  * matplotlib
  * numpy
  * webbrowser
+ * threading
+ * time
 
 Planned Features List:
  * dedicated data loading system
